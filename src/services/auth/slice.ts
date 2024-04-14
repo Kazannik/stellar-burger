@@ -11,7 +11,7 @@ import {
 interface TAuthState {
   isAuthenticated: boolean;
   data: TUser;
-  error: string | undefined;
+  error?: string;
   loginUserRequest: boolean;
 }
 
