@@ -9,7 +9,7 @@ import { FC } from 'react';
 
 export const ConstructorPage: FC = () => {
   const isIngredientsLoading = useSelector(
-    (state) => state.ingredients.isLoading
+    (store) => store.burgerConstructor.isIngredientsLoading
   );
 
   return (
