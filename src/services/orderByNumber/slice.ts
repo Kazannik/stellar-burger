@@ -31,7 +31,6 @@ const orderByNumberSlice = createSlice({
       .addCase(fetchOrderByNumber.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message;
-        console.log(state.error);
       })
       .addCase(fetchOrderByNumber.fulfilled, (state, action) => {
         state.isLoading = false;

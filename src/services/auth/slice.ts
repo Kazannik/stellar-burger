@@ -37,11 +37,10 @@ const authSlice = createSlice({
     selectUserData: (state) => state.data,
     selectIsAuthenticated: (state) => state.isAuthenticated,
     selectError: (state) => state.error,
-    selectloginRequest: (state) => state.loginUserRequest
+    selectLoginRequest: (state) => state.loginUserRequest
   },
   extraReducers(builder) {
     builder
-
       .addCase(fetchRegisterUser.pending, (state) => {
         state.isAuthenticated = false;
       })
