@@ -35,3 +35,17 @@
 //     }
 //   }
 // }
+
+Cypress.Commands.add('buttonClick', (value) => {
+  return cy.get(`${value}`).children('button').click();
+});
+
+Cypress.Commands.add('getModal', () => {
+  return cy.get('#modals > div:first-child').as('modal');
+});
+
+Cypress.Commands.add('getIngredient', (index) => {
+  return cy.get(
+    `#root > div > main > div > section:nth-child(2) > ul > li:nth-child(${1 + index}) > div:nth-child(2) > .constructor-element > .constructor-element__row > span.constructor-element__text`
+  );
+});

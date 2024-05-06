@@ -11,7 +11,7 @@ interface IFeedsSliceState {
   error: string | undefined;
 }
 
-const initialState: IFeedsSliceState = {
+export const initialState: IFeedsSliceState = {
   feeds: [],
   isLoading: false,
   total: 0,

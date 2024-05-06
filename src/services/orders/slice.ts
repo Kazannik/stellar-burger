@@ -9,7 +9,7 @@ interface IFeedSliceState {
   error: string | undefined;
 }
 
-const initialState: IFeedSliceState = {
+export const initialState: IFeedSliceState = {
   userOrders: [],
   isLoading: false,
   error: undefined

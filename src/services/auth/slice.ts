@@ -15,7 +15,7 @@ interface TAuthState {
   loginUserRequest: boolean;
 }
 
-const initialState: TAuthState = {
+export const initialState: TAuthState = {
   isAuthenticated: false,
   data: {
     name: '',
@@ -103,6 +103,8 @@ const authSlice = createSlice({
       .addCase(fetchLogoutUser.fulfilled, (state) => {
         state.isAuthenticated = true;
         state.loginUserRequest = false;
+        state.data.name = '';
+        state.data.email = '';
       });
   }
 });

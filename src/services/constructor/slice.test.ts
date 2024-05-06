@@ -7,15 +7,42 @@ import {
   ingredientRemove,
   selectConstructorBurger,
   burgerConstructorReducer,
-  IBurgerConstructorSliceState
+  IBurgerConstructorSliceState,
+  initialState
 } from './slice';
 
 import { CONSTRUCTOR_INGREDIENTS, INGREDIENTS } from '../../utils/testData';
+import {
+  EnhancedStore,
+  StoreEnhancer,
+  ThunkDispatch,
+  Tuple,
+  UnknownAction,
+  configureStore
+} from '@reduxjs/toolkit';
 
-describe('тестирование редьюсера constructorSlice', () => {
-  describe('тестирование экшена addIngredient', () => {
-    test('добавление ингредиента в массив ingredients', () => {
-      const initialState: IBurgerConstructorSliceState = {
+let initialStore: EnhancedStore<
+  { burgerConstructor: IBurgerConstructorSliceState },
+  UnknownAction,
+  Tuple<
+    [
+      StoreEnhancer<{
+        dispatch: ThunkDispatch<
+          { burgerConstructor: IBurgerConstructorSliceState },
+          undefined,
+          UnknownAction
+        >;
+      }>,
+      StoreEnhancer
+    ]
+  >
+>;
+
+beforeEach(() => {
+  initialStore = configureStore({
+    reducer: { burgerConstructor: burgerConstructorReducer },
+    preloadedState: {
+      burgerConstructor: {
         constructorItems: {
           bun: CONSTRUCTOR_INGREDIENTS[0],
           ingredients: [
@@ -26,47 +53,41 @@ describe('тестирование редьюсера constructorSlice', () => {
         },
         isIngredientsLoading: false,
         error: null
-      };
+      }
+    }
+  });
+});
 
-      const newState = burgerConstructorReducer(
-        initialState,
-        addIngredients(INGREDIENTS[4])
-      );
-
-      const receivedIngredient = newState.constructorItems.ingredients[3];
-      expect(receivedIngredient._id).toEqual(INGREDIENTS[4]._id);
-    });
-
+describe('тестирование редьюсера constructorSlice', () => {
+  describe('тестирование экшена addIngredient', () => {
     test('добавление булки в пустое поле', () => {
-      const initialState: IBurgerConstructorSliceState = {
-        constructorItems: {
-          bun: null,
-          ingredients: []
-        },
-        isIngredientsLoading: false,
-        error: null
-      };
-
-      const newState = burgerConstructorReducer(
+      const receivedState = burgerConstructorReducer(
         initialState,
         addIngredients(INGREDIENTS[0])
       );
 
-      const receivedBun = newState.constructorItems.bun;
+      const receivedBun = receivedState.constructorItems.bun;
       expect(receivedBun?._id).toEqual(INGREDIENTS[0]._id);
+    });
+
+    test('добавление ингредиента в массив ingredients', () => {
+      expect(
+        initialStore.getState().burgerConstructor.constructorItems.ingredients
+          .length
+      ).toEqual(3);
+
+      const receivedState = burgerConstructorReducer(
+        initialStore.getState().burgerConstructor,
+        addIngredients(INGREDIENTS[4])
+      );
+
+      const receivedIngredient = receivedState.constructorItems.ingredients[3];
+      expect(receivedState.constructorItems.ingredients.length).toEqual(4);
+      expect(receivedIngredient._id).toEqual(INGREDIENTS[4]._id);
     });
   });
 
   describe('тестирование экшена removeIngredient', () => {
-    const initialState: IBurgerConstructorSliceState = {
-      constructorItems: {
-        bun: CONSTRUCTOR_INGREDIENTS[0],
-        ingredients: [CONSTRUCTOR_INGREDIENTS[1]]
-      },
-      isIngredientsLoading: false,
-      error: null
-    };
-
     const expectedResult = {
       ...initialState,
       constructorItems: {
@@ -76,31 +97,18 @@ describe('тестирование редьюсера constructorSlice', () => {
     };
 
     test('удаление ингредиента из конструктора', () => {
-      const newState = burgerConstructorReducer(
-        initialState,
+      const receivedState = burgerConstructorReducer(
+        initialStore.getState().burgerConstructor,
         ingredientRemove(CONSTRUCTOR_INGREDIENTS[1])
       );
 
-      const receivedIngredients = newState.constructorItems.ingredients;
+      const receivedIngredients = receivedState.constructorItems.ingredients;
       const expectedIngredients = expectedResult.constructorItems.ingredients;
       expect(receivedIngredients).toEqual(expectedIngredients);
     });
   });
 
   describe('тестирование экшенов перемещения: ingredientsMoveUp и ingredientsMoveDown', () => {
-    const initialState: IBurgerConstructorSliceState = {
-      constructorItems: {
-        bun: CONSTRUCTOR_INGREDIENTS[0],
-        ingredients: [
-          CONSTRUCTOR_INGREDIENTS[1],
-          CONSTRUCTOR_INGREDIENTS[2],
-          CONSTRUCTOR_INGREDIENTS[3]
-        ]
-      },
-      isIngredientsLoading: false,
-      error: null
-    };
-
     test('перемещение ингредиента на позицию выше', () => {
       const expectedResult = {
         ...initialState,
@@ -113,11 +121,11 @@ describe('тестирование редьюсера constructorSlice', () => {
           ]
         }
       };
-      const newState = burgerConstructorReducer(
-        initialState,
+      const receivedState = burgerConstructorReducer(
+        initialStore.getState().burgerConstructor,
         ingredientsMoveUp(2)
       );
-      const receivedIngredients = newState.constructorItems.ingredients;
+      const receivedIngredients = receivedState.constructorItems.ingredients;
       const expectedIngredients = expectedResult.constructorItems.ingredients;
       expect(receivedIngredients).toEqual(expectedIngredients);
     });
@@ -135,11 +143,11 @@ describe('тестирование редьюсера constructorSlice', () => {
         }
       };
 
-      const newState = burgerConstructorReducer(
-        initialState,
+      const receivedState = burgerConstructorReducer(
+        initialStore.getState().burgerConstructor,
         ingredientsMoveDown(1)
       );
-      const receivedIngredients = newState.constructorItems.ingredients;
+      const receivedIngredients = receivedState.constructorItems.ingredients;
       const expectedIngredients = expectedResult.constructorItems.ingredients;
       expect(receivedIngredients).toEqual(expectedIngredients);
     });
@@ -148,21 +156,8 @@ describe('тестирование редьюсера constructorSlice', () => {
 
 describe('Тестирование селектора selectConstructorBurger', () => {
   test('получение ингридиентов', () => {
-    const initialState: IBurgerConstructorSliceState = {
-      constructorItems: {
-        bun: CONSTRUCTOR_INGREDIENTS[0],
-        ingredients: [
-          CONSTRUCTOR_INGREDIENTS[1],
-          CONSTRUCTOR_INGREDIENTS[2],
-          CONSTRUCTOR_INGREDIENTS[3]
-        ]
-      },
-      isIngredientsLoading: false,
-      error: null
-    };
-
     const burgerConstructorState = selectConstructorBurger({
-      burgerConstructor: initialState
+      burgerConstructor: initialStore.getState().burgerConstructor
     });
     expect(burgerConstructorState.constructorItems.bun).toEqual(
       CONSTRUCTOR_INGREDIENTS[0]

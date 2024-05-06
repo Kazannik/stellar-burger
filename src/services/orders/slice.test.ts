@@ -1,17 +1,12 @@
 import { expect, test, describe } from '@jest/globals';
 
-import { selectUserOrders, userOrderReducer } from './slice';
+import { initialState, selectUserOrders, userOrderReducer } from './slice';
 
 import { fetchUserOrders } from './action';
-import { ORDER, ORDERS } from '../../utils/testData';
+import { ORDERS } from '../../utils/testData';
+import { configureStore } from '@reduxjs/toolkit';
 
 describe('тестирование экшена fetchUserOrders', () => {
-  const initialState = {
-    userOrders: ORDERS,
-    isLoading: false,
-    error: undefined
-  };
-
   const actions = {
     pending: {
       type: fetchUserOrders.pending.type,
@@ -48,13 +43,18 @@ describe('тестирование экшена fetchUserOrders', () => {
 
 describe('Тестирование селектора selectUserOrders', () => {
   test('получение заказов пользователя', () => {
-    const newState = {
-      userOrders: [ORDER],
-      error: '',
-      isLoading: true
-    };
+    const receivedStore = configureStore({
+      reducer: { userOrders: userOrderReducer },
+      preloadedState: {
+        userOrders: {
+          userOrders: ORDERS,
+          isLoading: false,
+          error: undefined
+        }
+      }
+    });
 
-    const receivedOrders = selectUserOrders({ userOrders: newState });
-    expect(receivedOrders).toEqual([ORDER]);
+    const receivedOrders = selectUserOrders(receivedStore.getState());
+    expect(receivedOrders).toEqual(ORDERS);
   });
 });

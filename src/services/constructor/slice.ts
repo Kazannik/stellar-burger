@@ -11,7 +11,7 @@ export interface IBurgerConstructorSliceState {
   error: string | null;
 }
 
-const initialState: IBurgerConstructorSliceState = {
+export const initialState: IBurgerConstructorSliceState = {
   constructorItems: {
     bun: null,
     ingredients: []

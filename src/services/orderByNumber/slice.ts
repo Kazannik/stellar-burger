@@ -9,7 +9,7 @@ interface IOrderByNumberSliceState {
   error: string | undefined;
 }
 
-const initialState: IOrderByNumberSliceState = {
+export const initialState: IOrderByNumberSliceState = {
   orders: [],
   isLoading: false,
   error: undefined

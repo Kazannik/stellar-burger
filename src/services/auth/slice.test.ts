@@ -1,7 +1,7 @@
 import { expect, test, describe } from '@jest/globals';
 import { configureStore } from '@reduxjs/toolkit';
 
-import { selectUserData, authReducer } from './slice';
+import { selectUserData, authReducer, initialState } from './slice';
 
 import {
   fetchGetUser,
@@ -12,16 +12,6 @@ import {
 } from './action';
 
 describe('Тестирование редьюсера authReducer', () => {
-  const initialState = {
-    isAuthenticated: false,
-    data: {
-      name: 'TestName',
-      email: 'TestEmail'
-    },
-    error: undefined,
-    loginUserRequest: false
-  };
-
   describe('Тестирование асинхронного экшена fetchGetUser', () => {
     const actions = {
       pending: {
@@ -212,8 +202,8 @@ describe('Тестирование редьюсера authReducer', () => {
       const receivedState = authReducer(initialState, actions.fulfilled);
       expect(receivedState.isAuthenticated).toBeTruthy();
       expect(receivedState.loginUserRequest).toBeFalsy();
-      expect(receivedState.data.name).toBe('TestName');
-      expect(receivedState.data.email).toBe('TestEmail');
+      expect(receivedState.data.name).toBe('');
+      expect(receivedState.data.email).toBe('');
       expect(receivedState.error).toBeUndefined();
     });
   });

@@ -1,4 +1,3 @@
-
 import * as orderData from '../fixtures/orders.json';
 
 const BUN_ID = `[data-cy=${'643d69a5c3f7b9001cfa093d'}]`;
@@ -28,20 +27,20 @@ beforeEach(() => {
     fixture: 'orders.json'
   });
 
-  cy.visit('http://localhost:4000/');
+  cy.visit('/');
 });
 
 describe('Тестирование загрузки списка ингредиентов в конструктор', () => {
   it('Добавление булок и ингредиентов в заказ', () => {
-    cy.get(BUN_ID).children('button').click();
+    cy.buttonClick(BUN_ID);
 
-    cy.get(MAIN_IDS[0]).children('button').click();
-    cy.get(MAIN_IDS[1]).children('button').click();
-    cy.get(MAIN_IDS[2]).children('button').click();
-    cy.get(MAIN_IDS[3]).children('button').click();
-    cy.get(MAIN_IDS[4]).children('button').click();
+    cy.buttonClick(MAIN_IDS[0]);
+    cy.buttonClick(MAIN_IDS[1]);
+    cy.buttonClick(MAIN_IDS[2]);
+    cy.buttonClick(MAIN_IDS[3]);
+    cy.buttonClick(MAIN_IDS[4]);
 
-    cy.get(SAUCE_ID).children('button').click();
+    cy.buttonClick(SAUCE_ID);
 
     const burgerCunstructor = {
       constructorBunTop: cy.get(
@@ -49,21 +48,11 @@ describe('Тестирование загрузки списка ингреди�
       ),
 
       constructoMainIngredients: [
-        cy.get(
-          '#root > div > main > div > section:nth-child(2) > ul > li:first-child > div:nth-child(2) > .constructor-element > .constructor-element__row > span.constructor-element__text'
-        ),
-        cy.get(
-          '#root > div > main > div > section:nth-child(2) > ul > li:nth-child(2) > div:nth-child(2) > .constructor-element > .constructor-element__row > span.constructor-element__text'
-        ),
-        cy.get(
-          '#root > div > main > div > section:nth-child(2) > ul > li:nth-child(3) > div:nth-child(2) > .constructor-element > .constructor-element__row > span.constructor-element__text'
-        ),
-        cy.get(
-          '#root > div > main > div > section:nth-child(2) > ul > li:nth-child(4) > div:nth-child(2) > .constructor-element > .constructor-element__row > span.constructor-element__text'
-        ),
-        cy.get(
-          '#root > div > main > div > section:nth-child(2) > ul > li:nth-child(5) > div:nth-child(2) > .constructor-element > .constructor-element__row > span.constructor-element__text'
-        )
+        cy.getIngredient(0),
+        cy.getIngredient(1),
+        cy.getIngredient(2),
+        cy.getIngredient(3),
+        cy.getIngredient(4)
       ],
 
       constructoSauce: cy.get(
@@ -108,15 +97,14 @@ describe('Тестирование загрузки списка ингреди�
 describe('Тестирование работы модальных окон', () => {
   beforeEach(() => {
     cy.intercept('GET', 'api/ingredients', { fixture: 'ingredients.json' });
-    cy.visit('http://localhost:4000/');
+    cy.visit('/');
   });
 
   it('Открытие модального окна ингредиента', () => {
     const ingredient = cy.get(BUN_ID);
     ingredient.click();
 
-    const modal = cy.get('#modals').as('modal');
-    const header = modal.get('div:first-child > h3');
+    const header = cy.getModal().get('h3');
 
     header.contains('Флюоресцентная булка R2-D3');
   });
@@ -126,8 +114,7 @@ describe('Тестирование работы модальных окон', ()
 
     ingredient.click();
 
-    const modal = cy.get('#modals > div:first-child').as('modal');
-    const button = modal.get('div:first-child > button > svg');
+    const button = cy.getModal().get('div:first-child > button > svg');
 
     button.click();
 
@@ -139,8 +126,7 @@ describe('Тестирование работы модальных окон', ()
 
     ingredient.click();
 
-    const modal = cy.get('#modals > div:first-child').as('modal');
-    const overlay = modal.get('#modals > div:nth-child(2)');
+    const overlay = cy.getModal().get('#modals > div:nth-child(2)');
 
     overlay.click({ force: true });
 
@@ -163,16 +149,16 @@ describe('Тестирование создания заказа', () => {
     cy.getAllCookies().should('be.empty');
   });
 
-  it('Создание заказа и проверка его номера в открытом модальной окне', () => {
-    cy.get(BUN_ID).children('button').click();
+  it('Создание заказа и проверка его номера в открытом модальном окне', () => {
+    cy.buttonClick(BUN_ID);
 
-    cy.get(MAIN_IDS[0]).children('button').click();
-    cy.get(MAIN_IDS[1]).children('button').click();
-    cy.get(MAIN_IDS[2]).children('button').click();
-    cy.get(MAIN_IDS[3]).children('button').click();
-    cy.get(MAIN_IDS[4]).children('button').click();
+    cy.buttonClick(MAIN_IDS[0]);
+    cy.buttonClick(MAIN_IDS[1]);
+    cy.buttonClick(MAIN_IDS[2]);
+    cy.buttonClick(MAIN_IDS[3]);
+    cy.buttonClick(MAIN_IDS[4]);
 
-    cy.get(SAUCE_ID).children('button').click();
+    cy.buttonClick(SAUCE_ID);
 
     const orderButton = cy.get(
       '#root > div > main > div > section:nth-child(2) > div > button'
@@ -180,7 +166,7 @@ describe('Тестирование создания заказа', () => {
 
     orderButton.click();
 
-    const orderModal = cy.get('#modals > div:first-child').as('modal');
+    const orderModal = cy.getModal();
     const orderNumber = orderModal.get('div:nth-child(2) > h2');
 
     orderNumber.contains(orderData.order.number);

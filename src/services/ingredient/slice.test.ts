@@ -1,18 +1,13 @@
 import { expect, test, describe } from '@jest/globals';
 
-import { selectIngredients, ingredientsReducer } from './slice';
+import { selectIngredients, ingredientsReducer, initialState } from './slice';
 
 import { fetchIngredients } from './action';
 import { INGREDIENTS } from '../../utils/testData';
+import { configureStore } from '@reduxjs/toolkit';
 
 describe('тестирование редьюсера ingredientsReducer', () => {
   describe('тестирование асинхронного экшена fetchIngredients', () => {
-    const initialState = {
-      ingredients: INGREDIENTS,
-      isLoading: false,
-      error: undefined
-    };
-
     const actions = {
       pending: {
         type: fetchIngredients.pending.type,
@@ -50,15 +45,18 @@ describe('тестирование редьюсера ingredientsReducer', () =>
 
 describe('Тестирование селектора selectIngredients', () => {
   test('получение ингридиентов', () => {
-    const initialState = {
-      ingredients: INGREDIENTS,
-      isLoading: false,
-      error: undefined
-    };
-
-    const receivedIngredients = selectIngredients({
-      ingredients: initialState
+    const receivedStore = configureStore({
+      reducer: { ingredients: ingredientsReducer },
+      preloadedState: {
+        ingredients: {
+          ingredients: INGREDIENTS,
+          isLoading: false,
+          error: undefined
+        }
+      }
     });
+
+    const receivedIngredients = selectIngredients(receivedStore.getState());
     expect(receivedIngredients).toEqual(INGREDIENTS);
   });
 });

@@ -1,34 +1,42 @@
 import { expect, test, describe } from '@jest/globals';
 
-import { clearOrderBurger, selectOrderBurger, burgerReducer } from './slice';
+import {
+  clearOrderBurger,
+  selectOrderBurger,
+  burgerReducer,
+  initialState
+} from './slice';
 
 import { fetchOrderBurger } from './action';
 
 import { ORDER } from '../../utils/testData';
+import { configureStore } from '@reduxjs/toolkit';
 
 describe('тестирование редьюсера burgerReducer', () => {
   describe('тест для редьюсера clearOrderBurger', () => {
-    const initialOrderState = {
-      burger: ORDER,
-      isLoading: false,
-      error: undefined
-    };
+    const receivedStore = configureStore({
+      reducer: { burger: burgerReducer },
+      preloadedState: {
+        burger: {
+          burger: ORDER,
+          isLoading: false,
+          error: undefined
+        }
+      }
+    });
 
     test('очистка данных о бургере', () => {
-      const newState = burgerReducer(initialOrderState, clearOrderBurger());
+      const receivedState = burgerReducer(
+        receivedStore.getState().burger,
+        clearOrderBurger()
+      );
 
-      const { burger } = newState;
+      const { burger } = receivedState;
       expect(burger).toBeNull();
     });
   });
 
   describe('тестирование экшена fetchOrderBurger', () => {
-    const newState = {
-      burger: ORDER,
-      isLoading: false,
-      error: undefined
-    };
-
     const actions = {
       pending: {
         type: fetchOrderBurger.pending.type,
@@ -45,20 +53,20 @@ describe('тестирование редьюсера burgerReducer', () => {
     };
 
     test('тест синхронного экшена fetchOrderBurger.pending', () => {
-      const receivedState = burgerReducer(newState, actions.pending);
+      const receivedState = burgerReducer(initialState, actions.pending);
       expect(receivedState.isLoading).toBeTruthy();
       expect(receivedState.error).toBeUndefined();
     });
 
     test('тест синхронного экшена fetchOrderBurger.rejected', () => {
-      const receivedState = burgerReducer(newState, actions.rejected);
+      const receivedState = burgerReducer(initialState, actions.rejected);
       expect(receivedState.isLoading).toBeFalsy();
-      expect(receivedState.burger).toBe(actions.fulfilled.payload.order);
+      expect(receivedState.burger).toBeNull();
       expect(receivedState.error).toBe(actions.rejected.error.message);
     });
 
     test('тест синхронного экшена fetchOrderBurger.fulfilled', () => {
-      const receivedState = burgerReducer(newState, actions.fulfilled);
+      const receivedState = burgerReducer(initialState, actions.fulfilled);
       expect(receivedState.isLoading).toBeFalsy();
       expect(receivedState.burger?.number).toBe(
         actions.fulfilled.payload.order.number
@@ -70,13 +78,18 @@ describe('тестирование редьюсера burgerReducer', () => {
 
 describe('Тестирование селектора selectOrderBurger', () => {
   test('получение данных о бургере для заказа', () => {
-    const newState = {
-      burger: ORDER,
-      isLoading: false,
-      error: undefined
-    };
+    const receivedStore = configureStore({
+      reducer: { burger: burgerReducer },
+      preloadedState: {
+        burger: {
+          burger: ORDER,
+          isLoading: false,
+          error: undefined
+        }
+      }
+    });
 
-    const receivedOrder = selectOrderBurger({ burger: newState });
+    const receivedOrder = selectOrderBurger(receivedStore.getState());
     expect(receivedOrder).toEqual(ORDER);
   });
 });

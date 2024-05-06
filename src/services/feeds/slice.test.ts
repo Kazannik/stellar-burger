@@ -4,22 +4,16 @@ import {
   selectFeeds,
   selectTotal,
   selectTotalToday,
-  feedsReducer
+  feedsReducer,
+  initialState
 } from './slice';
 
 import { fetchFeeds } from './action';
 import { ORDERS } from '../../utils/testData';
+import { configureStore } from '@reduxjs/toolkit';
 
 describe('тестирование редьюсера feedsReducer', () => {
   describe('тестирование асинхронного экшена fetchFeeds', () => {
-    const initialState = {
-      feeds: ORDERS,
-      isLoading: false,
-      total: 0,
-      totalToday: 0,
-      error: undefined
-    };
-
     const actions = {
       pending: {
         type: fetchFeeds.pending.type,
@@ -56,31 +50,36 @@ describe('тестирование редьюсера feedsReducer', () => {
 });
 
 describe('Тестирование селекторов', () => {
-  const initialState = {
-    feeds: ORDERS,
-    isLoading: false,
-    total: 1000,
-    totalToday: 800,
-    error: undefined
-  };
+  const receivedStore = configureStore({
+    reducer: { feeds: feedsReducer },
+    preloadedState: {
+      feeds: {
+        feeds: ORDERS,
+        isLoading: false,
+        total: 1000,
+        totalToday: 800,
+        error: undefined
+      }
+    }
+  });
 
   describe('Тестирование селектора selectFeeds', () => {
     test('получение заказов', () => {
-      const receivedOrders = selectFeeds({ feeds: initialState });
+      const receivedOrders = selectFeeds(receivedStore.getState());
       expect(receivedOrders).toEqual(ORDERS);
     });
   });
 
   describe('Тестирование селектора selectTotal', () => {
     test('получение суммы заказов', () => {
-      const receivedTotal = selectTotal({ feeds: initialState });
+      const receivedTotal = selectTotal(receivedStore.getState());
       expect(receivedTotal).toEqual(1000);
     });
   });
 
   describe('Тестирование селектора selectTotalToday', () => {
     test('получение суммы заказов за день', () => {
-      const receivedTotalToday = selectTotalToday({ feeds: initialState });
+      const receivedTotalToday = selectTotalToday(receivedStore.getState());
       expect(receivedTotalToday).toEqual(800);
     });
   });
