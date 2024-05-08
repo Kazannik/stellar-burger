@@ -15,7 +15,7 @@ interface TAuthState {
   loginUserRequest: boolean;
 }
 
-const initialState: TAuthState = {
+export const initialState: TAuthState = {
   isAuthenticated: false,
   data: {
     name: '',
@@ -37,11 +37,10 @@ const authSlice = createSlice({
     selectUserData: (state) => state.data,
     selectIsAuthenticated: (state) => state.isAuthenticated,
     selectError: (state) => state.error,
-    selectloginRequest: (state) => state.loginUserRequest
+    selectLoginRequest: (state) => state.loginUserRequest
   },
   extraReducers(builder) {
     builder
-
       .addCase(fetchRegisterUser.pending, (state) => {
         state.isAuthenticated = false;
       })
@@ -104,6 +103,8 @@ const authSlice = createSlice({
       .addCase(fetchLogoutUser.fulfilled, (state) => {
         state.isAuthenticated = true;
         state.loginUserRequest = false;
+        state.data.name = '';
+        state.data.email = '';
       });
   }
 });

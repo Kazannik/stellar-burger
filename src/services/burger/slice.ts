@@ -9,7 +9,7 @@ interface IOrderBurgerSliceState {
   error: string | undefined;
 }
 
-const initialState: IOrderBurgerSliceState = {
+export const initialState: IOrderBurgerSliceState = {
   burger: null,
   isLoading: false,
   error: undefined

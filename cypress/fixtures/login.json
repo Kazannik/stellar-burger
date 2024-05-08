@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "accessToken": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MWE3MTY5OTdlZGUwMDAxZDA2NTYyYyIsImlhdCI6MTcxNDgxNzMzMiwiZXhwIjoxNzE0ODE4NTMyfQ.6c90PJHNmYXFr1LaBA73oSHX9tTHhKL_45uPxPARFqA",
+  "refreshToken": "dd14eae98956b64aacedbf0f6d7924b690738358eac32cfa992fb85c459f651bb1bb7bbf0e11e54c",
+  "user": {
+      "email": "kazannik.m@mail.ru",
+      "name": "Mikhail"
+  }
+}
